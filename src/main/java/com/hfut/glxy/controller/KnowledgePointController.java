@@ -3,24 +3,32 @@ package com.hfut.glxy.controller;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.hfut.glxy.dto.Result;
+import com.hfut.glxy.entity.Chapter;
 import com.hfut.glxy.entity.KnowledgePoint;
+import com.hfut.glxy.entity.Unit;
 import com.hfut.glxy.relation.Chapter_KnowledgePoint;
 import com.hfut.glxy.service.ChapterService;
 import com.hfut.glxy.service.Chapter_KnowledgePointService;
 import com.hfut.glxy.service.KnowledgePointService;
 import com.hfut.glxy.utils.ResultUtil;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.smartcardio.TerminalFactory;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Jessiecaicai
  * @Description: 知识点管理是在教学单元管理下的，教学单元下会有相应知识点的管理。
  *               并且章处能显示该章所有的知识点，然后点击知识点弹出包含有该知识点对应的教学单元任用户选中。
- *               知识点和教学单元是多对一的关系；
+ *               知识点和教学单元是多对多的关系；
  * @Date: Created in 16:16 2017/12/7
  * @Modified By:
  */
@@ -38,12 +46,40 @@ public class KnowledgePointController {
 
     /**
      * @Author: Jessiecaicai
+     * @Description: 增加教学单元与知识点之间的关联
+     * {
+    "unitId":"22",
+    "knowledgePointId":"11"
+    }
+     * @Date: 21:16 2018/1/3
+     * @param:  * @param null
+     */
+    @PostMapping(value = "/addUnitKnowledgePointRelation")
+    @Transactional
+    public Result addUnitKnowledgePointRelation(@RequestBody Map<String,Object> map){
+        Unit unit=new Unit();
+        KnowledgePoint knowledgePoint=new KnowledgePoint();
+        unit.setId((String)map.get("unitId"));
+        knowledgePoint.setId((String)map.get("knowledgePointId"));
+        try{
+            if (knowledgePointService.addUnitKnowledgePointRelation(unit,knowledgePoint)==1){
+                return ResultUtil.OK();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        return ResultUtil.fail("添加教学单元和知识点的关联失败");
+    }
+
+    /**
+     * @Author: Jessiecaicai
      * @Description: 根据章分页知识点 pageNum表示当前页码 ok
      * @Date: 20:10 2017/12/17
      * @param:  * @param null
      */
     @GetMapping("/{pageNum}")
-    public Result listKnowledgePoints(@PathVariable(value="pageNum",required = false)int pageNum, HttpSession session){
+    public Result listKnowledgePointsByChapter(@PathVariable(value="pageNum",required = false)int pageNum, HttpSession session){
         String chapterId=(String)session.getAttribute("chapterId");
         if(pageNum<=0){
             pageNum=1;
@@ -62,20 +98,44 @@ public class KnowledgePointController {
 
     /**
      * @Author: Jessiecaicai
-     * @Description: 知识点分页1  size 一页显示数量  current 当前页码 ok
+     * @Description: 知识点分页1  size 一页显示数量  current 当前页码 选出 is_delete 为0的所有知识点分页方法
+     *               仅仅是全部知识点的分页 ok indeed
      * @Date: 21:22 2017/12/25
      * @param:  * @param null
      */
     @GetMapping("/page")
     public Result pageKnowledgePoints2(Page<KnowledgePoint> page){
         try{
-            page=knowledgePointService.selectPage(page);
+            page=knowledgePointService.selectPage(page,new EntityWrapper<KnowledgePoint>()
+            .eq("is_delete",0));
             return ResultUtil.success(page);
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtil.selectError();
         }
 
+    }
+
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 知识点按章节提取 ok
+     * @Date: 16:59 2018/1/4
+     * @param:  * @param null
+     */
+    @PostMapping("/listKnowledgePointByChapter")
+    public Result<List<KnowledgePoint>> listKnowledgePointByChapter(@RequestParam("chapter_id") String chapterId){
+        //Chapter chapter=new Chapter();
+        //KnowledgePoint knowledgePoint=new KnowledgePoint();
+        //chapter.setId((String)map.get("chapterId"));
+        try {
+            List<KnowledgePoint> list=knowledgePointService.listKnowledgePointByChapter(chapterId);
+            if (list!=null){
+                return ResultUtil.success(list);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultUtil.selectError();
     }
 
 
