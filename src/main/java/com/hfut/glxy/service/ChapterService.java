@@ -18,4 +18,11 @@ public interface ChapterService extends IService<Chapter>{
      * @param:  * @param null
      */
     public int addRelation(Course course, Chapter chapter) throws Exception;
+
+    /**
+     * @Author: Jessiecaicai
+     * @Description:
+     * @Date: 16:24 2018/1/4
+     * @param:  * @param null
+     */
 }
