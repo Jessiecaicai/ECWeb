@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.hfut.glxy.dto.Result;
 import com.hfut.glxy.entity.Chapter;
+import com.hfut.glxy.entity.Course;
 import com.hfut.glxy.entity.KnowledgePoint;
 import com.hfut.glxy.entity.Unit;
 import com.hfut.glxy.relation.Chapter_KnowledgePoint;
@@ -131,11 +132,34 @@ public class KnowledgePointController {
             List<KnowledgePoint> list=knowledgePointService.listKnowledgePointByChapter(chapterId);
             if (list!=null){
                 return ResultUtil.success(list);
+            }else {
+                return ResultUtil.fail("在该章中，暂无相关联知识点");
             }
         }catch (Exception e){
             e.printStackTrace();
         }
         return ResultUtil.selectError();
+    }
+
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 知识点按课程选取 无对应课程时，不执行fail方法
+     * @Date: 17:23 2018/1/5
+     * @param:  * @param null
+     */
+    @PostMapping("/listKnowledgePointByCourse")
+    public Result<List<KnowledgePoint>> listKnowledgePointByCourse(@RequestParam("course_id")String courseId){
+        try{
+            List<KnowledgePoint> list=knowledgePointService.listKnowledgePointByCourse(courseId);
+            if(list!=null){
+                return ResultUtil.success(list);
+            }else{
+                return ResultUtil.fail("在该课程中，暂无相关联知识点");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.selectError();
+        }
     }
 
     /**
@@ -154,6 +178,33 @@ public class KnowledgePointController {
             List<Unit> list=knowledgePointService.listUnitByKnowledgePointSameChapter(chapter,knowledgePoint);
             if (list!=null){
                 return ResultUtil.success(list);
+            }else {
+                return ResultUtil.fail("在该章中，该知识点暂时无相应课程章节对应");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultUtil.selectError();
+    }
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 列出该知识点对应的所有教学单元，是在同一门课程里的 ok
+     *                  取出的为空时，不进行fail方法？
+     * @Date: 16:00 2018/1/5
+     * @param:  * @param null
+     */
+    @PostMapping("/listUnitByKnowledgePointSameCourse")
+    public Result<List<Unit>> listUnitByKnowledgePointSameCourse(@RequestParam("knowledge_point_id")String knowledgePointId,@RequestParam("course_id")String courseId){
+        try {
+            Course course=new Course();
+            KnowledgePoint knowledgePoint=new KnowledgePoint();
+            course.setId(courseId);
+            knowledgePoint.setId(knowledgePointId);
+            List<Unit> list=knowledgePointService.listUnitByKnowledgePointSameCourse(knowledgePoint,course);
+            if(list!=null){
+                return ResultUtil.success(list);
+            }else {
+                return ResultUtil.fail("在本课程中，该知识点暂时无相应课程章节对应");
             }
         }catch (Exception e){
             e.printStackTrace();

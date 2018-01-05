@@ -3,6 +3,7 @@ package com.hfut.glxy.service.impl;
 import com.alibaba.druid.sql.ast.statement.SQLIfStatement;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.hfut.glxy.entity.Chapter;
+import com.hfut.glxy.entity.Course;
 import com.hfut.glxy.entity.KnowledgePoint;
 import com.hfut.glxy.entity.Unit;
 import com.hfut.glxy.mapper.KnowledgePointMapper;
@@ -71,6 +72,25 @@ public class KnowledgePointServiceImpl extends ServiceImpl<KnowledgePointMapper,
             return null;
         }
     }
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 根据课程id选出该课程所有的知识点
+     * @Date: 17:20 2018/1/5
+     * @param:  * @param null
+     */
+    @Override
+    public List<KnowledgePoint> listKnowledgePointByCourse(String courseId) throws Exception{
+        if (courseId==null){
+            throw new Exception("取不到课程信息");
+        }
+        try {
+            List<KnowledgePoint> list=knowledgePointMapper.listKnowledgePointByCourse(courseId);
+            return list;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * @Author: Jessiecaicai
@@ -85,6 +105,25 @@ public class KnowledgePointServiceImpl extends ServiceImpl<KnowledgePointMapper,
         }
         try {
             List<Unit> list=knowledgePointMapper.listUnitByKnowledgePointSameChapter(chapter.getId(),knowledgePoint.getId());
+            return list;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 列出该知识点对应的所有教学单元，是在同一门课程里的
+     * @Date: 15:58 2018/1/5
+     * @param:  * @param null
+     */
+    @Override
+    public List<Unit> listUnitByKnowledgePointSameCourse(KnowledgePoint knowledgePoint, Course course) throws Exception{
+        if(knowledgePoint==null&&course==null){
+            throw new Exception("查找关联课程单元失败");
+        }
+        try {
+            List<Unit> list=knowledgePointMapper.listUnitByKnowledgePointSameCourse(knowledgePoint.getId(),course.getId());
             return list;
         }catch (Exception e){
             e.printStackTrace();

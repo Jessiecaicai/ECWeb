@@ -2,6 +2,7 @@ package com.hfut.glxy.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.hfut.glxy.entity.Chapter;
+import com.hfut.glxy.entity.Course;
 import com.hfut.glxy.entity.KnowledgePoint;
 import com.hfut.glxy.entity.Unit;
 
@@ -24,6 +25,14 @@ public interface KnowledgePointService extends IService<KnowledgePoint>{
 
     /**
      * @Author: Jessiecaicai
+     * @Description: 根据课程id选出该课程所有的知识点
+     * @Date: 17:19 2018/1/5
+     * @param:  * @param null
+     */
+    public List<KnowledgePoint> listKnowledgePointByCourse(String courseId) throws Exception;
+
+    /**
+     * @Author: Jessiecaicai
      * @Description: 列出该章节所有的知识点
      * @Date: 16:25 2018/1/4
      * @param:  * @param null
@@ -36,5 +45,13 @@ public interface KnowledgePointService extends IService<KnowledgePoint>{
      * @param:  * @param null
      */
     public List<Unit> listUnitByKnowledgePointSameChapter(Chapter chapter,KnowledgePoint knowledgePoint) throws Exception;
+
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 列出该知识点对应的所有教学单元，是在同一门课程里的
+     * @Date: 15:57 2018/1/5
+     * @param:  * @param null
+     */
+    public List<Unit> listUnitByKnowledgePointSameCourse(KnowledgePoint knowledgePoint, Course course) throws Exception;
 
 }
