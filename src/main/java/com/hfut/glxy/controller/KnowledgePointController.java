@@ -138,6 +138,28 @@ public class KnowledgePointController {
         return ResultUtil.selectError();
     }
 
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 列出该知识点对应的所有教学单元，是在同一个章里的 ok
+     * @Date: 21:37 2018/1/4
+     * @param:  * @param null
+     */
+    @PostMapping("/listUnitByKnowledgePointSameChapter")
+    public Result<List<Unit>> listUnitByKnowledgePointSameChapter(@RequestParam("chapter_id")String chapterId,@RequestParam("knowledge_point_id")String knowledgePointId){
+        try {
+            Chapter chapter=new Chapter();
+            KnowledgePoint knowledgePoint=new KnowledgePoint();
+            chapter.setId(chapterId);
+            knowledgePoint.setId(knowledgePointId);
+            List<Unit> list=knowledgePointService.listUnitByKnowledgePointSameChapter(chapter,knowledgePoint);
+            if (list!=null){
+                return ResultUtil.success(list);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultUtil.selectError();
+    }
 
     /**
      * @Author: Jessiecaicai

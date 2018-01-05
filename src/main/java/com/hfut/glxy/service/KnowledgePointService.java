@@ -24,9 +24,17 @@ public interface KnowledgePointService extends IService<KnowledgePoint>{
 
     /**
      * @Author: Jessiecaicai
-     * @Description: 列出该章节所有的知识点（属性包括知识点id与内容）
+     * @Description: 列出该章节所有的知识点
      * @Date: 16:25 2018/1/4
      * @param:  * @param null
      */
     public List<KnowledgePoint> listKnowledgePointByChapter(String chapterId) throws Exception;
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 列出该知识点对应的所有教学单元，是在同一个章里的
+     * @Date: 21:27 2018/1/4
+     * @param:  * @param null
+     */
+    public List<Unit> listUnitByKnowledgePointSameChapter(Chapter chapter,KnowledgePoint knowledgePoint) throws Exception;
+
 }

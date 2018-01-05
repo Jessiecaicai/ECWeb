@@ -37,7 +37,7 @@ public class KnowledgePointServiceImpl extends ServiceImpl<KnowledgePointMapper,
         }
 
         try {
-            int result=knowledgePointMapper.addunitKnowledgePointRelation(unit.getId(),knowledgePoint.getId());
+            int result=knowledgePointMapper.addUnitKnowledgePointRelation(unit.getId(),knowledgePoint.getId());
             if(result==1){
                 return 1;
             }else if(result==0){
@@ -67,6 +67,26 @@ public class KnowledgePointServiceImpl extends ServiceImpl<KnowledgePointMapper,
             List<KnowledgePoint> list=knowledgePointMapper.listKnowledgePointByChapter(chapterId);
             return list;
         }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * @Author: Jessiecaicai
+     * @Description: 列出该知识点对应的所有教学单元，是在同一个章里的
+     * @Date: 21:30 2018/1/4
+     * @param:  * @param null
+     */
+    @Override
+    public List<Unit> listUnitByKnowledgePointSameChapter(Chapter chapter,KnowledgePoint knowledgePoint) throws Exception{
+        if (chapter==null&&knowledgePoint==null){
+            throw new Exception("添加的章节和知识点的参数有误");
+        }
+        try {
+            List<Unit> list=knowledgePointMapper.listUnitByKnowledgePointSameChapter(chapter.getId(),knowledgePoint.getId());
+            return list;
+        }catch (Exception e){
             e.printStackTrace();
             return null;
         }
